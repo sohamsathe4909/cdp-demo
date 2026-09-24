@@ -70,6 +70,28 @@ function must<T = any>(result: any, label: string): T {
   return result.data as T;
 }
 
+/**
+ * `.maybeSingle()` answers `data: null` when the row simply does not exist yet
+ * — for example a learner who signed up before the provisioning trigger from
+ * migration 0002 ran. That is an empty state, not a failed query, so it must
+ * not be thrown: throwing here used to collapse the whole dashboard into demo
+ * data even though every other table read succeeded.
+ */
+function mustMaybeSingle<T = any>(result: any, label: string): T {
+  if (result?.error) {
+    throw new Error(`${label}: ${result.error.message}`);
+  }
+
+  if (result?.data == null) {
+    console.warn(
+      `[dashboard] ${label} row is missing — using defaults instead of demo data`,
+    );
+    return {} as T;
+  }
+
+  return result.data as T;
+}
+
 function pluralizeQuizzes(count: number): string {
   if (count === 0) return "Not started yet";
   return count === 1 ? "1 quiz done" : `${count} quizzes done`;
@@ -189,7 +211,7 @@ async function buildSummaryPartsDb(
       .maybeSingle(),
   ]);
 
-  const program = must(programRes, "program_progress");
+  const program = mustMaybeSingle(programRes, "program_progress");
   const tracks = must(tracksRes, "tracks");
   const trackProgress = must(trackProgressRes, "track_progress");
   const badges = must(badgesRes, "badges");

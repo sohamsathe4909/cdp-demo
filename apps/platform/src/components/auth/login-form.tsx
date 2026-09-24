@@ -2,7 +2,7 @@
 
 import React, { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Lock, Mail, AlertCircle } from "lucide-react";
@@ -124,24 +124,28 @@ export function LoginForm() {
         </Button>
       </form>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-black/10" />
-        </div>
-        <div className="relative flex justify-center">
-          <span className="bg-white px-3 text-[11px] font-bold uppercase tracking-wider text-[#5a5f58]">
-            or
-          </span>
-        </div>
-      </div>
+      {!isSupabaseConfigured() && (
+        <>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-black/10" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-white px-3 text-[11px] font-bold uppercase tracking-wider text-[#5a5f58]">
+                or
+              </span>
+            </div>
+          </div>
 
-      <button
-        type="button"
-        onClick={handleDemoLogin}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#0e0e0e] bg-white px-5 py-3 text-sm font-semibold text-[#0e0e0e] transition hover:bg-[#f8dc03] active:scale-[0.98]"
-      >
-        Explore as Demo User
-      </button>
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#0e0e0e] bg-white px-5 py-3 text-sm font-semibold text-[#0e0e0e] transition hover:bg-[#f8dc03] active:scale-[0.98]"
+          >
+            Explore as Demo User
+          </button>
+        </>
+      )}
     </div>
   );
 }

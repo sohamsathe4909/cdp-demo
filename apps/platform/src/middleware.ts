@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { fetchWithRetry } from "@/lib/supabase/fetch-retry";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -23,6 +24,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const supabase = createServerClient(url!, key!, {
+    global: { fetch: fetchWithRetry },
     cookies: {
       getAll() {
         return request.cookies.getAll();
