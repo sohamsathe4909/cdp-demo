@@ -13,7 +13,7 @@ import type {
 
 import { createClient } from "./supabase/server";
 import { isSupabaseConfigured } from "./supabase/client";
-import { buildActivityParts, dateKey } from "./activity";
+import { buildActivityParts, dateKey, type ActivityInputRow } from "./activity";
 import {
   formatDuration,
   formatExpinarDate,
@@ -392,23 +392,18 @@ interface ActivityParts {
 }
 
 /**
- * Streak + chart data. Reads public.learning_activity (migration 0003);
- * falls back to the deterministic demo rows when the table is missing or
- * still empty, so the activity card always renders.
+ * Raw rows from public.learning_activity (migration 0003).
+ *
+ * Only needs `userId`, so the caller starts it in parallel with
+ * loadSummaryParts instead of awaiting it afterwards — the two database
+ * round-trips overlap instead of stacking. Returns null when Supabase is
+ * unconfigured, the table is missing, or there are no rows yet, so the
+ * caller can substitute the deterministic demo rows and keep the activity
+ * card rendering.
  */
-async function loadActivityParts(
+async function loadActivityRows(
   userId: string,
-  parts: SummaryParts,
-): Promise<ActivityParts> {
-  const options = {
-    currentDay: parts.program.currentDay,
-    totalDays: parts.program.totalDays,
-    totalModules: parts.tracks.reduce(
-      (sum, track) => sum + track.totalModules,
-      0,
-    ),
-  };
-
+): Promise<ActivityInputRow[] | null> {
   try {
     if (!isSupabaseConfigured()) {
       throw new Error("demo mode");
@@ -429,7 +424,7 @@ async function loadActivityParts(
       throw new Error(result.error.message);
     }
 
-    const rows = (result.data ?? []).map((row: any) => ({
+    const rows: ActivityInputRow[] = (result.data ?? []).map((row: any) => ({
       date: String(row.activity_date),
       learnedSeconds: Number(row.learned_seconds) || 0,
       modulesCompleted: Number(row.modules_completed) || 0,
@@ -439,23 +434,52 @@ async function loadActivityParts(
       throw new Error("no activity rows yet");
     }
 
-    return buildActivityParts(rows, options);
+    return rows;
   } catch (error) {
     // Optional table — never fail the whole dashboard over it.
     console.warn("[dashboard] falling back to demo activity:", error);
+    return null;
+  }
+}
+
+/**
+ * Shape activity rows (or the demo substitute when rows is null) into the
+ * streak + chart payloads. Needs the finished summary parts to size the
+ * charts, which is why this runs after loadSummaryParts — but only the
+ * shaping runs here, not the database read.
+ */
+function buildActivityFromRows(
+  rows: ActivityInputRow[] | null,
+  parts: SummaryParts,
+): ActivityParts {
+  const options = {
+    currentDay: parts.program.currentDay,
+    totalDays: parts.program.totalDays,
+    totalModules: parts.tracks.reduce(
+      (sum, track) => sum + track.totalModules,
+      0,
+    ),
+  };
+
+  if (rows == null) {
     return buildActivityParts(
       buildDemoActivityRows(options.currentDay),
       options,
     );
   }
+
+  return buildActivityParts(rows, options);
 }
 
 export async function getDashboardSummary(options: {
   userId: string;
   name: string;
 }): Promise<DashboardSummary> {
+  // The activity query only needs userId, so start it first and let it
+  // overlap with the summary round-trips instead of stacking after them.
+  const activityRowsPromise = loadActivityRows(options.userId);
   const parts = await loadSummaryParts(options.userId);
-  const activity = await loadActivityParts(options.userId, parts);
+  const activity = buildActivityFromRows(await activityRowsPromise, parts);
   const firstName = getFirstName(options.name);
   const now = new Date();
 

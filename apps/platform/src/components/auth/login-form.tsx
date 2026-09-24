@@ -34,8 +34,10 @@ export function LoginForm() {
       }
 
       const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+      // push alone fetches /dashboard fresh with the new session cookies —
+      // a refresh() right after it would run the whole server render twice.
       router.push(redirectTo);
-      router.refresh();
+      setLoading(false);
     } catch (err: any) {
       setError(err?.message || "An unexpected error occurred. Please try again.");
       setLoading(false);
@@ -50,7 +52,7 @@ export function LoginForm() {
     const redirectTo = searchParams.get("redirectTo") || "/dashboard";
     setTimeout(() => {
       router.push(redirectTo);
-      router.refresh();
+      setLoading(false);
     }, 350);
   }
 

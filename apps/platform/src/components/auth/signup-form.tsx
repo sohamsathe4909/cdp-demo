@@ -57,7 +57,6 @@ export function SignupForm() {
       }
       setTimeout(() => {
         router.push("/dashboard");
-        router.refresh();
       }, 1200);
     } catch (err: any) {
       setError(err?.message || "Failed to create account. Please try again.");

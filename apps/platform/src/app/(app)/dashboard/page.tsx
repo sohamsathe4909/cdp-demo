@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getSharedJwks } from "@/lib/supabase/jwks";
 import { getDashboardSummary } from "@/lib/dashboard";
 import { getDisplayName, getFirstName } from "@/lib/user";
 
@@ -14,18 +15,23 @@ import { StreakCard } from "@/components/dashboard/streak-card";
 export default async function DashboardPage() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Same local JWT check as the layout — no auth-server round-trip here
+  // either; the claims carry the id/email/metadata the summary needs.
+  const { data } = await supabase.auth.getClaims(undefined, {
+    jwks: await getSharedJwks(),
+  });
+  const claims = data?.claims;
 
-  const email = user?.email ?? "";
+  const email = claims?.email ?? "";
   const name = getDisplayName(
     email,
-    user?.user_metadata as Record<string, unknown> | null,
+    claims?.user_metadata
+      ? (claims.user_metadata as Record<string, unknown>)
+      : null,
   );
 
   const summary = await getDashboardSummary({
-    userId: user?.id ?? "usr_demo_01",
+    userId: claims?.sub ?? "usr_demo_01",
     name,
   });
 

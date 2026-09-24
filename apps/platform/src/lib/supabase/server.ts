@@ -29,6 +29,7 @@ export async function createClient() {
               sub: "usr_demo_01",
               email: userEmail,
               role: "authenticated",
+              user_metadata: { full_name: "Alex Hunter" },
             },
           },
           error: null,
