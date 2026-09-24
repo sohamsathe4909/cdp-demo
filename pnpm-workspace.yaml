@@ -1,0 +1,7 @@
+packages:
+  - "apps/*"
+  - "apps/sims/*"
+  - "packages/*"
+
+allowBuilds:
+  sharp: true

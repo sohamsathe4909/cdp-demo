@@ -1,0 +1,31 @@
+# Production Caddyfile for Unified CDP Domain Routing
+{$DOMAIN:localhost} {
+    # Realtime Socket.IO gateway
+    handle /socket.io* {
+        reverse_proxy gateway:4000
+    }
+
+    # Simulation SPAs
+    handle_path /sims/equity* {
+        reverse_proxy equity:4173
+    }
+
+    handle_path /sims/venture* {
+        reverse_proxy venture:4173
+    }
+
+    handle_path /sims/pw* {
+        reverse_proxy pw:4173
+    }
+
+    # Main CDP Next.js Platform & API
+    handle {
+        reverse_proxy platform:3000
+    }
+
+    encode gzip zstd
+    log {
+        output stdout
+        format json
+    }
+}

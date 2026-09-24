@@ -1,0 +1,288 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #0e0e0e;
+  --ink-light: #3a3f39;
+  --muted: #5a5f58;
+  --gold: #f8dc03;
+  --aqua: #1ed2f4;
+  --bg: #f9fff6;
+  --bg-alt: #ffffff;
+  --bg-dark: #eef3e9;
+  --border: rgba(0, 0, 0, 0.1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f9fff6;
+  color: #0e0e0e;
+  font-family:
+    "Archivo",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f9fff6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4dbcf;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #bcc5b5;
+}
+
+::selection {
+  background: #f8dc03;
+  color: #0e0e0e;
+}
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.font-hand {
+  font-family: "Caveat", "Segoe Script", cursive;
+}
+
+/* Vertical word rotator (FamApp-style): words slide up and down
+   one after the other inside a fixed-height window. */
+.word-rotator {
+  display: inline-block;
+  overflow: hidden;
+  height: 1.5em;
+}
+
+.word-rotator__list {
+  display: block;
+  margin: 0;
+  padding: 0;
+  animation: word-rotate 16s infinite;
+}
+
+.word-rotator__item {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  height: 1.5em;
+  line-height: 1.5em;
+  padding: 0;
+  border-radius: 0.35em;
+  /* No highlight: the row keeps the page background and the word itself is
+     yellow. min-width: 100% makes every row as wide as the widest word, and
+     text-align: left pins each word's start to the same spot after "from". */
+  color: #f8dc03;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* 6 words: slide down through all of them, then back up, one after the
+   other (each word = 16.666% of the list height). 100% === 0% for a
+   seamless loop. */
+@keyframes word-rotate {
+  0% {
+    transform: translateY(0);
+  }
+
+  10% {
+    transform: translateY(-16.666%);
+  }
+
+  20% {
+    transform: translateY(-33.333%);
+  }
+
+  30% {
+    transform: translateY(-50%);
+  }
+
+  40% {
+    transform: translateY(-66.666%);
+  }
+
+  50% {
+    transform: translateY(-83.333%);
+  }
+
+  60% {
+    transform: translateY(-66.666%);
+  }
+
+  70% {
+    transform: translateY(-50%);
+  }
+
+  80% {
+    transform: translateY(-33.333%);
+  }
+
+  90% {
+    transform: translateY(-16.666%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.word-rotator:hover .word-rotator__list {
+  animation-play-state: paused;
+}
+
+/* Two-line tagline: "Stop Taking Career advice" on line 1, "from <word>"
+   on line 2. Line 1 is the longer of the two at ~14em, so the size is
+   derived from the space it has — it can never wrap, and it stays larger
+   than the headline (which is sized in the JSX).
+
+   Below lg the block is a full-width row; at lg and up it sits in the
+   narrower left hero column (~52.5vw - 63px), which is why it tightens. */
+.hero-tagline {
+  font-size: min(26px, calc((100vw - 3rem) / 14));
+}
+
+@media (min-width: 640px) {
+  .hero-tagline {
+    font-size: min(40px, calc((100vw - 5rem) / 14));
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-tagline {
+    font-size: min(41px, calc((52.5vw - 5rem) / 14));
+  }
+}
+
+/* ---------------- Auth pages (login / signup) ----------------
+   Entrance for the form card, feedback shake on errors, and slow floating
+   accents on the black brand panel. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translateX(-2px);
+  }
+  20%,
+  80% {
+    transform: translateX(4px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-6px);
+  }
+  40%,
+  60% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+.animate-rise-in {
+  animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-shake {
+  animation: shake 0.4s ease both;
+}
+
+.animate-float-y {
+  animation: float-y 6s ease-in-out infinite;
+}
+
+/* ---------------- 30-day schedule strip ----------------
+   Done cells fill in left → right once on load (each cell's delay is set
+   inline from its day index). Fill-mode is `backwards` only, so once the
+   animation ends the cell falls back to its own styles — the week-focus
+   dimming/spotlight transitions keep working afterwards. */
+@keyframes day-fill {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.65);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.day-fill {
+  animation: day-fill 0.65s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/* Tooltip / day-detail popover entrance. Opacity only, so it can't fight
+   the centering transforms on the same element. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.15s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word-rotator__list {
+    animation: none;
+  }
+
+  .day-fill,
+  .animate-fade-in,
+  .animate-ping {
+    animation: none;
+  }
+}
