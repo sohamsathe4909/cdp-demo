@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { AppHeader } from "./app-header";
 import { AppSidebar } from "./app-sidebar";
 
@@ -15,6 +16,19 @@ interface AppShellProps {
 
 export function AppShell({ user, children }: AppShellProps) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    async function protectRestoredPage(event: PageTransitionEvent) {
+      if (!event.persisted) return;
+
+      const supabase = createClient();
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) window.location.replace("/");
+    }
+
+    window.addEventListener("pageshow", protectRestoredPage);
+    return () => window.removeEventListener("pageshow", protectRestoredPage);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#f9fff6] text-[#0e0e0e]">

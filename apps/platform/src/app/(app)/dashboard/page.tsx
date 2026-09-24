@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { getSharedJwks } from "@/lib/supabase/jwks";
 import { getDashboardSummary } from "@/lib/dashboard";
 import { getDisplayName, getFirstName } from "@/lib/user";
 
@@ -11,37 +10,33 @@ import { BadgesCard } from "@/components/dashboard/badges-card";
 import { CareerFitCard } from "@/components/dashboard/career-fit-card";
 import { ActivityCharts } from "@/components/dashboard/activity-charts";
 import { StreakCard } from "@/components/dashboard/streak-card";
+import { DashboardGreeting } from "@/components/dashboard/dashboard-greeting";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
 
-  // Same local JWT check as the layout — no auth-server round-trip here
-  // either; the claims carry the id/email/metadata the summary needs.
-  const { data } = await supabase.auth.getClaims(undefined, {
-    jwks: await getSharedJwks(),
-  });
-  const claims = data?.claims;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const email = claims?.email ?? "";
+  const email = user?.email ?? "";
   const name = getDisplayName(
     email,
-    claims?.user_metadata
-      ? (claims.user_metadata as Record<string, unknown>)
+    user?.user_metadata
+      ? (user.user_metadata as Record<string, unknown>)
       : null,
   );
 
   const summary = await getDashboardSummary({
-    userId: claims?.sub ?? "usr_demo_01",
+    userId: user?.id ?? "usr_demo_01",
     name,
   });
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-8 sm:px-7 lg:px-10 lg:py-10">
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-7 sm:py-8 lg:px-10 lg:py-10">
       {/* Greeting */}
       <header>
-        <h1 className="text-3xl font-bold tracking-[-0.03em] text-[#0e0e0e] sm:text-4xl">
-          {summary.greeting}, {getFirstName(name)}
-        </h1>
+        <DashboardGreeting firstName={getFirstName(name)} />
 
         <p className="mt-2.5 text-[15px] leading-6 text-[#5a5f58]">
           {summary.headlineNote}

@@ -7,6 +7,24 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Lock, Mail, AlertCircle } from "lucide-react";
 
+const SIGN_IN_TIMEOUT_MS = 20_000;
+
+async function withSignInTimeout(request: Promise<any>): Promise<any> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(
+      () => reject(new Error("Sign in is taking too long. Check your connection and try again.")),
+      SIGN_IN_TIMEOUT_MS,
+    );
+  });
+
+  try {
+    return await Promise.race([request, timeout]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -22,10 +40,13 @@ export function LoginForm() {
 
     try {
       const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const normalizedEmail = email.trim().toLowerCase();
+      const { data, error: authError } = await withSignInTimeout(
+        supabase.auth.signInWithPassword({
+          email: normalizedEmail,
+          password,
+        }),
+      );
 
       if (authError) {
         setError(authError.message);
@@ -33,11 +54,19 @@ export function LoginForm() {
         return;
       }
 
-      const redirectTo = searchParams.get("redirectTo") || "/dashboard";
-      // push alone fetches /dashboard fresh with the new session cookies —
-      // a refresh() right after it would run the whole server render twice.
-      router.push(redirectTo);
-      setLoading(false);
+      if (!data.session) {
+        setError("Sign in succeeded, but the session could not be saved. Please allow cookies and try again.");
+        setLoading(false);
+        return;
+      }
+
+      const requestedPath = searchParams.get("redirectTo");
+      const redirectTo = requestedPath?.startsWith("/") && !requestedPath.startsWith("//")
+        ? requestedPath
+        : "/dashboard";
+      // A full navigation guarantees the newly written auth cookies are used
+      // by middleware, including on mobile browsers with an empty router cache.
+      window.location.replace(redirectTo);
     } catch (err: any) {
       setError(err?.message || "An unexpected error occurred. Please try again.");
       setLoading(false);
@@ -68,6 +97,11 @@ export function LoginForm() {
             <Input
               id="email"
               type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               placeholder="you@example.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -91,6 +125,7 @@ export function LoginForm() {
             <Input
               id="password"
               type="password"
+              autoComplete="current-password"
               placeholder="••••••••"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -110,7 +145,7 @@ export function LoginForm() {
         <Button
           type="submit"
           disabled={loading}
-          className="h-12 w-full rounded-xl bg-[#0e0e0e] text-sm font-semibold text-white shadow-[3px_3px_0_#f8dc03] transition-all duration-200 hover:-translate-y-0.5 hover:bg-black hover:shadow-[5px_5px_0_#f8dc03] active:translate-y-0 active:shadow-[2px_2px_0_#f8dc03]"
+          className="h-12 w-full touch-manipulation rounded-xl bg-[#0e0e0e] text-sm font-semibold text-white shadow-[3px_3px_0_#f8dc03] transition-all duration-200 hover:-translate-y-0.5 hover:bg-black hover:shadow-[5px_5px_0_#f8dc03] active:translate-y-0 active:shadow-[2px_2px_0_#f8dc03]"
         >
           {loading ? (
             <>

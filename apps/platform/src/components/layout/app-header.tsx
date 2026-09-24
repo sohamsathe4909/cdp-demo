@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -33,12 +34,21 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ user, onMenuClick }: AppHeaderProps) {
+  const [loggingOut, setLoggingOut] = useState(false);
+
   async function handleLogout() {
+    if (loggingOut) return;
+    setLoggingOut(true);
     const supabase = createClient();
+    const { error } = await supabase.auth.signOut();
 
-    await supabase.auth.signOut();
+    if (error) {
+      setLoggingOut(false);
+      return;
+    }
 
-    window.location.href = "/login";
+    // Replace the protected history entry so Back returns to the public site.
+    window.location.replace("/");
   }
 
   const initials =
@@ -153,10 +163,11 @@ export function AppHeader({ user, onMenuClick }: AppHeaderProps) {
 
             <DropdownMenuItem
               onClick={handleLogout}
+              disabled={loggingOut}
               className="cursor-pointer rounded-lg text-red-600 focus:bg-red-50 focus:text-red-700"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Log out
+              {loggingOut ? "Logging out…" : "Log out"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { fetchWithRetry } from "@/lib/supabase/fetch-retry";
-import { getSharedJwks } from "@/lib/supabase/jwks";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -44,13 +43,12 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Local JWT verification against the shared key set — no per-request JWKS
-  // download, no auth-server round-trip.
-  const { data } = await supabase.auth.getClaims(undefined, {
-    jwks: await getSharedJwks(),
-  });
+  // Ask Supabase for the authenticated user. This is slightly more work than
+  // trusting locally cached signing keys, but avoids rejecting a fresh session
+  // when a Vercel instance has a missing or stale JWKS cache.
+  const { data } = await supabase.auth.getUser();
 
-  if (protectedRoute && !data?.claims) {
+  if (protectedRoute && !data.user) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
     redirectUrl.searchParams.set("redirectTo", pathname);

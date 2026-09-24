@@ -24,7 +24,7 @@ export function BadgesCard({ items, earned, total }: BadgesCardProps) {
         </p>
       </div>
 
-      <div className="mt-5 grid grid-cols-6 gap-3">
+      <div className="mt-5 grid grid-cols-4 gap-3 min-[420px]:grid-cols-6">
         {items.map((badge) =>
           badge.earned ? (
             <span

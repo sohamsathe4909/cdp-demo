@@ -6,8 +6,8 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen bg-[#f9fff6] text-[#0e0e0e] selection:bg-[#f8dc03] selection:text-[#0e0e0e]">
-      <div className="grid min-h-screen lg:grid-cols-2">
+    <main className="min-h-[100dvh] bg-[#f9fff6] text-[#0e0e0e] selection:bg-[#f8dc03] selection:text-[#0e0e0e]">
+      <div className="grid min-h-[100dvh] lg:grid-cols-2">
         {/* ----------------------------------------------------------
             Brand panel — same ink/gold/aqua as the landing header
         ---------------------------------------------------------- */}
@@ -59,22 +59,32 @@ export default function LoginPage() {
         {/* ----------------------------------------------------------
             Form
         ---------------------------------------------------------- */}
-        <section className="flex items-center justify-center px-5 py-12 sm:px-8">
+        <section className="flex items-center justify-center px-4 py-6 sm:px-8 sm:py-12">
           <div className="w-full max-w-md animate-rise-in">
+            <Link href="/" aria-label="Rarewise home" className="mb-7 inline-flex lg:hidden">
+              <Image
+                src="/rarewise-logo.png"
+                alt="Rarewise"
+                width={1067}
+                height={215}
+                priority
+                className="h-8 w-auto"
+              />
+            </Link>
             <Link
               href="/"
-              className="group mb-8 inline-flex items-center gap-2 text-sm font-semibold text-[#5a5f58] transition hover:text-[#0e0e0e]"
+              className="group mb-5 flex items-center gap-2 text-sm font-semibold text-[#5a5f58] transition hover:text-[#0e0e0e] sm:mb-8 lg:inline-flex"
             >
               <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
               Back to home
             </Link>
 
-            <div className="rounded-[28px] border-2 border-[#0e0e0e] bg-white p-7 shadow-[6px_6px_0_rgba(14,14,14,0.12)] transition-shadow duration-300 hover:shadow-[6px_6px_0_#f8dc03] sm:p-9">
-              <div className="mb-8">
+            <div className="rounded-2xl border-2 border-[#0e0e0e] bg-white p-5 shadow-[4px_4px_0_rgba(14,14,14,0.12)] transition-shadow duration-300 hover:shadow-[6px_6px_0_#f8dc03] sm:rounded-[28px] sm:p-9 sm:shadow-[6px_6px_0_rgba(14,14,14,0.12)]">
+              <div className="mb-6 sm:mb-8">
                 <span className="inline-block rounded-md bg-[#f8dc03] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#0e0e0e]">
                   Welcome back
                 </span>
-                <h2 className="mt-4 text-3xl font-extrabold tracking-[-0.04em]">
+                <h2 className="mt-4 text-[1.75rem] font-extrabold tracking-[-0.04em] sm:text-3xl">
                   Log in to Rarewise
                 </h2>
                 <span className="mt-3 block h-[3px] w-12 rotate-[-3deg] rounded bg-[#f8dc03]" />
