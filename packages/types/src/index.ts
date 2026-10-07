@@ -171,7 +171,8 @@ export interface DashboardSummary {
   program: ProgramPlan;
   currentModule: CurrentModule;
   steps: JourneyStep[];
-  liveExpinar: LiveExpinar;
+  /** Next session, or null when the catalog has no future one (empty state). */
+  liveExpinar: LiveExpinar | null;
   tracks: TrackProgress[];
   streak: StreakInfo;
   activity: ActivityCharts;

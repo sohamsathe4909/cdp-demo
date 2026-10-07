@@ -57,7 +57,8 @@ interface ThirtyDayStripProps {
   plan: ProgramPlan;
   tracks: TrackProgress[];
   careerFit: CareerFitReport;
-  liveExpinar: LiveExpinar;
+  /** Null when no session is scheduled — no dot to place. */
+  liveExpinar: LiveExpinar | null;
 }
 
 function weekIndexForIndex(index: number): number {
@@ -106,16 +107,19 @@ export function ThirtyDayStrip({
     const map = new Map<number, DayEvent[]>();
 
     // The live event gets its dot on its real calendar date; other marked
-    // cells (stored Expinar markers) stay generic.
-    const liveExpinarIndex = plan.days.findIndex(
-      (d) => d.date === dateKey(new Date(liveExpinar.startsAt)),
-    );
+    // cells (stored Expinar markers) stay generic. No scheduled session →
+    // -1, so every marker falls through to the generic label below.
+    const liveExpinarIndex = liveExpinar
+      ? plan.days.findIndex(
+          (d) => d.date === dateKey(new Date(liveExpinar.startsAt)),
+        )
+      : -1;
 
     plan.days.forEach((day, index) => {
       const events: DayEvent[] = [];
 
       if (day.isExpinarDay) {
-        if (index === liveExpinarIndex) {
+        if (liveExpinar && index === liveExpinarIndex) {
           events.push({
             kind: "expinar",
             label: liveExpinar.title,

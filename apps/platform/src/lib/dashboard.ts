@@ -63,7 +63,8 @@ interface SummaryParts {
   currentModule: CurrentModule;
   activeTrack: { completed: number; total: number };
   quizzesDone: number;
-  liveExpinar: LiveExpinar;
+  /** Null when expinar_events holds no future session — never invented. */
+  liveExpinar: LiveExpinar | null;
   tracks: TrackProgress[];
   badges: BadgeInfo[];
   careerFit: CareerFitReport;
@@ -109,6 +110,9 @@ function pluralizeQuizzes(count: number): string {
   if (count === 0) return "Not started yet";
   return count === 1 ? "1 quiz done" : `${count} quizzes done`;
 }
+
+/** Journey-step label for the Expinar when no session is scheduled. */
+const EXPINAR_NOT_SCHEDULED = "Not scheduled";
 
 function buildSteps(
   activeTrack: { completed: number; total: number },
@@ -378,7 +382,12 @@ async function buildSummaryPartsDb(
   const nextProgress = progressByModule.get(nextModule.module_index);
   const event = (eventRes.data ?? [])[0];
 
-  const liveExpinar: LiveExpinar = event
+  // No future session in expinar_events → null, not an invented one: the
+  // card renders its "No upcoming session" state instead of a fabricated
+  // demo session whose date is made up from the clock.
+  // (buildSummaryPartsDemo() keeps buildDemoExpinar() — with no database
+  // configured there is nothing to be honest about.)
+  const liveExpinar: LiveExpinar | null = event
     ? {
         id: event.id,
         title: event.title,
@@ -388,7 +397,7 @@ async function buildSummaryPartsDb(
         timeLabel: formatExpinarTime(new Date(event.starts_at)),
         joinNote: event.join_note || EXPINAR_JOIN_NOTE,
       }
-    : buildDemoExpinar();
+    : null;
 
   const earnedIds = new Set(
     userBadges.map((row: any) => row.badge_id as string),
@@ -433,7 +442,7 @@ async function buildSummaryPartsDb(
   // program day (e.g. next Thursday is day N of *this* learner's plan), so
   // the strip's yellow dot lands on the real date for every account.
   const liveExpinarDay: number | null =
-    liveExpinar.startsAt != null
+    liveExpinar != null
       ? dayNumberBetween(
           anchorKey,
           anchorDay,
@@ -639,7 +648,7 @@ export async function getDashboardSummary(options: {
   const now = new Date();
 
   const noteSecondSentence =
-    parts.program.totalDays > 0
+    parts.program.totalDays > 0 && parts.liveExpinar != null
       ? ` Finish module ${parts.currentModule.moduleIndex} before ${formatWeekday(
           new Date(parts.liveExpinar.startsAt),
         )}'s Expinar.`
@@ -662,7 +671,7 @@ export async function getDashboardSummary(options: {
     steps: buildSteps(
       parts.activeTrack,
       parts.quizzesDone,
-      parts.liveExpinar.dateLabel,
+      parts.liveExpinar?.dateLabel ?? EXPINAR_NOT_SCHEDULED,
     ),
     liveExpinar: parts.liveExpinar,
     tracks: parts.tracks,
@@ -677,10 +686,13 @@ export async function getDashboardSummary(options: {
   };
 }
 
-/** The next upcoming Expinar — used by the summary and the .ics endpoint. */
+/**
+ * The next upcoming Expinar — used by the summary and the .ics endpoint.
+ * Null when the catalog has no future session (no invented fallback).
+ */
 export async function getUpcomingExpinar(
   userId: string,
-): Promise<LiveExpinar> {
+): Promise<LiveExpinar | null> {
   const parts = await loadSummaryParts(userId);
   return parts.liveExpinar;
 }
