@@ -1,0 +1,110 @@
+{
+  "provenance": "Scripts and Q&A supplied by the user on 2026-09-30. These are approved reference material, not independently verified verbatim video transcripts. The current game has no transcript or interrogation phase; this file is not imported into the learner-facing bundle.",
+  "pitches": [
+    {
+      "id": "pitch-6",
+      "suppliedId": "pitch-06",
+      "pitcherName": "Vaishnavi",
+      "companyName": "Nykaa",
+      "sourceVideo": "Vaishnavi pitch nyka.mp4",
+      "pitchScript": "Beauty shopping in India is still fragmented. Customers often struggle to know which products are authentic, which brands to trust, and what actually suits them. Nykaa is building a focused beauty-commerce platform where customers can discover a curated range of genuine products, learn through content, and buy from a trusted destination rather than searching across dozens of disconnected sellers. The opportunity is not just to sell cosmetics online — it is to become the place customers rely on for discovery, education, and repeat beauty purchases. As the relationship with the customer grows, we can expand the assortment, deepen brand partnerships, and eventually extend the experience beyond a purely online storefront. The core bet is that beauty is a high-engagement category where trust and curation can create much stronger loyalty than a generic marketplace.",
+      "interrogationQuestions": [
+        {
+          "id": "pitch06-q1",
+          "question": "Why does this need to be a dedicated beauty platform? Why wouldn't a large general marketplace win simply because it already has more traffic?",
+          "founderResponse": "A general marketplace can offer beauty products, but the customer problem is broader than availability. Trust, authenticity, discovery, education, and category expertise matter heavily in beauty. Our advantage has to come from becoming a destination customers deliberately choose for the category, not from trying to outspend horizontal marketplaces on traffic."
+        },
+        {
+          "id": "pitch06-q2",
+          "question": "You keep emphasizing authenticity and trust. What stops another retailer from making exactly the same promise?",
+          "founderResponse": "The promise itself is easy to copy. The harder part is building the operating model behind it — direct or authorized sourcing relationships, consistent product quality, a curated assortment, useful content, and a customer experience that reinforces trust over repeated purchases. The defensibility comes from the system and the customer relationship, not the word 'authentic' on a homepage."
+        },
+        {
+          "id": "pitch06-q3",
+          "question": "Beauty can involve a huge number of brands and SKUs. How do you avoid tying up too much capital in inventory that may not sell?",
+          "founderResponse": "That is a real execution risk. We have to be disciplined about assortment and use demand data to decide where deeper inventory is justified. A focused category gives us better information about what customers are searching for and repurchasing, but inventory management still has to be a core capability rather than an afterthought."
+        },
+        {
+          "id": "pitch06-q4",
+          "question": "What would convince you that customers actually value Nykaa itself rather than simply buying whichever product is cheapest?",
+          "founderResponse": "I would look for repeat purchasing, direct traffic, engagement with discovery and education content, and customers buying across multiple brands or categories through us. If customers only appear when we discount heavily, then we haven't built the kind of trusted destination the thesis depends on."
+        },
+        {
+          "id": "pitch06-q5",
+          "question": "What is the biggest thing that could break this business even if the beauty market keeps growing?",
+          "founderResponse": "If customer acquisition remains expensive and loyalty never develops, the economics become much less attractive. The thesis depends on repeat behavior and trust lowering the cost of serving a customer over time. If we have to continuously buy every transaction through discounts and marketing, growth alone would not be enough."
+        }
+      ]
+    },
+    {
+      "id": "pitch-7",
+      "suppliedId": "pitch-07",
+      "pitcherName": "Abhijeet",
+      "companyName": "Zerodha",
+      "sourceVideo": "abhijeet pitch zerodha .mp4",
+      "pitchScript": "Retail investors and traders in India face a brokerage experience that is often expensive, complicated, and built around legacy systems. Zerodha is creating a technology-first brokerage with transparent, low-cost pricing and a self-service platform designed for people who want to manage their own investing and trading. The underlying idea is simple: technology makes the cost of processing an order much less dependent on the size of that order, so the customer should not have to pay a percentage-based fee just because they trade more value. By keeping the operating model lean and building the core technology ourselves, we believe we can offer dramatically better pricing while still running a sustainable brokerage. If we can combine lower costs with reliability, useful tools, and investor education, we can remove several of the barriers that keep people from participating confidently in the markets.",
+      "interrogationQuestions": [
+        {
+          "id": "pitch07-q1",
+          "question": "Low brokerage sounds attractive, but isn't this just a race to the bottom on price?",
+          "founderResponse": "It would be if price were the only difference. The model works because technology and a lean operating structure lower our cost to serve. The longer-term product has to combine transparent pricing with a reliable platform, strong tooling, and good customer education. Low pricing gets attention, but the operating model has to make it sustainable."
+        },
+        {
+          "id": "pitch07-q2",
+          "question": "Brokerage is a trust-sensitive and regulated business. Why should customers move money to a newer platform just to save on fees?",
+          "founderResponse": "They shouldn't move purely for a cheaper price if they don't trust the platform. Reliability, transparency, security, compliance, and customer support are foundational. The pricing proposition only matters once customers believe the platform is dependable enough to handle something as sensitive as their investments."
+        },
+        {
+          "id": "pitch07-q3",
+          "question": "If you earn less per trade than traditional brokers, what makes the economics work at scale?",
+          "founderResponse": "The model depends on serving customers at a much lower incremental cost through technology and self-service. We don't need the traditional cost structure attached to every client relationship. Scale matters, but so does keeping the operation efficient enough that higher activity does not require expenses to rise at the same rate."
+        },
+        {
+          "id": "pitch07-q4",
+          "question": "What prevents an established broker from simply matching your pricing once you prove there is demand?",
+          "founderResponse": "They can match a headline fee, but changing the economics of an existing organization is harder. Legacy systems, branch structures, sales incentives, and existing revenue models can all make a low-cost model more difficult to adopt. We still have to execute well, but the advantage is not just the price — it is designing the entire business around that model from the beginning."
+        },
+        {
+          "id": "pitch07-q5",
+          "question": "What is the biggest operational risk as this business grows?",
+          "founderResponse": "Reliability. When customers depend on the platform during volatile markets, outages or execution problems can destroy trust quickly. Scaling the technology, risk controls, and support operation without losing the cost advantage is one of the most important challenges in the business."
+        }
+      ]
+    },
+    {
+      "id": "pitch-8",
+      "suppliedId": "pitch-08",
+      "pitcherName": "Riddhi",
+      "companyName": "Stayzilla",
+      "sourceVideo": "riddhi pitch stayziilla .mp4",
+      "pitchScript": "India has a huge accommodation market, but much of the supply outside large hotel chains is fragmented and difficult to discover or book online. Smaller hotels, guest houses, serviced apartments, and alternative stays often have available rooms but limited digital distribution, while travelers struggle to compare trustworthy options across different cities and price points. Stayzilla is building a marketplace that brings this fragmented supply online and makes it searchable and bookable in one place. For property owners, we provide access to demand they may not be able to reach themselves. For travelers, we expand the range of places they can discover beyond the major branded hotels. The opportunity is to build network density city by city: more useful supply attracts more travelers, and growing demand gives more property owners a reason to join the platform.",
+      "interrogationQuestions": [
+        {
+          "id": "pitch08-q1",
+          "question": "Listing lots of properties is easy. How do you make sure the customer experience is consistent when you don't control the actual stay?",
+          "founderResponse": "That is one of the hardest parts of the marketplace. We need meaningful property information, customer reviews, support, and processes for dealing with bad experiences. We won't make every independent property identical, but customers need enough transparency to understand what they are booking and enough trust that the platform will help when something goes wrong."
+        },
+        {
+          "id": "pitch08-q2",
+          "question": "Why wouldn't hotels simply list on every competing travel site? What keeps your supply differentiated?",
+          "founderResponse": "Many will list in multiple places, so exclusivity cannot be the entire strategy. We need to be especially useful to fragmented and under-digitized properties — helping them access demand, manage listings, and reach customers they otherwise struggle to reach. The stronger the demand we generate for that supply, the stronger the relationship becomes."
+        },
+        {
+          "id": "pitch08-q3",
+          "question": "Marketplace businesses often have a cold-start problem. How do you decide whether to acquire travelers first or properties first?",
+          "founderResponse": "We have to build local density rather than trying to solve the entire country at once. Enough relevant supply in a city makes the product useful to travelers, and enough bookings then make the marketplace valuable to property owners. The sequencing is about reaching minimum useful density market by market."
+        },
+        {
+          "id": "pitch08-q4",
+          "question": "What happens when a customer arrives and the property says the room is unavailable or the listing doesn't match reality?",
+          "founderResponse": "Those failures directly damage trust in the marketplace, so support and supply quality cannot be treated as secondary operations. We need confirmation processes, clear property information, customer-service escalation, and eventually better tools for partners to keep availability accurate."
+        },
+        {
+          "id": "pitch08-q5",
+          "question": "What is the biggest risk in scaling this business quickly?",
+          "founderResponse": "Growing listings faster than we can maintain quality. A marketplace can look impressive because the inventory count is rising, but if availability is unreliable or customer experiences deteriorate, that growth can actually weaken the product. We need density and quality, not just the largest possible number of listings."
+        }
+      ]
+    }
+  ]
+}

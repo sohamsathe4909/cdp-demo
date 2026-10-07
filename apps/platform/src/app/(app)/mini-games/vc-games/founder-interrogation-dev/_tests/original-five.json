@@ -1,0 +1,37 @@
+[
+  {
+    "id": "pitch-1",
+    "videoUrl": "/pitch-videos/pitch-01.mp4",
+    "thumbnailUrl": "/pitch-videos/thumbnails/pitch-01.jpg",
+    "realCompanyName": "Flipkart",
+    "outcome": "The idea became Flipkart, a major Indian e-commerce marketplace. In 2018, Walmart completed an approximately $16 billion investment for about 77% of the company."
+  },
+  {
+    "id": "pitch-2",
+    "videoUrl": "/pitch-videos/pitch-02.mp4",
+    "thumbnailUrl": "/pitch-videos/thumbnails/pitch-02.jpg",
+    "realCompanyName": "Koo",
+    "outcome": "The idea became Koo, an Indian social media platform. Its founders announced in July 2024 that the service would shut down after partnership and acquisition discussions did not produce a viable path forward."
+  },
+  {
+    "id": "pitch-3",
+    "videoUrl": "/pitch-videos/pitch-03.mp4",
+    "thumbnailUrl": "/pitch-videos/thumbnails/pitch-03.jpg",
+    "realCompanyName": "LocalOye",
+    "outcome": "The idea became LocalOye, a home-services marketplace. In 2016, its founder described a restructuring and a shift toward automation, monetization, and business partnerships rather than direct customer acquisition."
+  },
+  {
+    "id": "pitch-4",
+    "videoUrl": "/pitch-videos/pitch-04.mp4",
+    "thumbnailUrl": "/pitch-videos/thumbnails/pitch-04.jpg",
+    "realCompanyName": "PepperTap",
+    "outcome": "The idea became PepperTap. In 2016, the team closed its consumer grocery-delivery business and shifted toward e-commerce logistics after the delivery model proved costly to sustain."
+  },
+  {
+    "id": "pitch-5",
+    "videoUrl": "/pitch-videos/pitch-05.mp4",
+    "thumbnailUrl": "/pitch-videos/thumbnails/pitch-05.jpg",
+    "realCompanyName": "Zoomcar",
+    "outcome": "The idea became Zoomcar, a car-sharing platform. It completed a business combination and began trading on Nasdaq in December 2023; Nasdaq later announced the delisting of its securities in 2026 after trading had been suspended."
+  }
+]
