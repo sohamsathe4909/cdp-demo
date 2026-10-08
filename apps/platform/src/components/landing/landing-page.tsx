@@ -1,535 +1,951 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import React, { useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "motion/react";
+import { ArrowRight, Menu, X } from "lucide-react";
+
 import {
-  ArrowRight,
-  ArrowUpRight,
-  BriefcaseBusiness,
-  CircleDollarSign,
-  FlaskConical,
-  LineChart,
-  Menu,
-  NotebookPen,
-  Sparkles,
-  WalletCards,
-  X,
-} from "lucide-react";
-
-const careerTracks = [
-  {
-    title: "Investment Banking",
-    description:
-      "Explore deals, valuation, M&A and the fast-paced work behind major financial decisions.",
-    icon: BriefcaseBusiness,
-  },
-  {
-    title: "Equity Research",
-    description:
-      "Learn how analysts study businesses, markets, financial statements and investment thesis.",
-    icon: LineChart,
-  },
-  {
-    title: "Private Wealth",
-    description:
-      "Understand how wealth managers think about portfolios, clients, risk and long-term capital.",
-    icon: WalletCards,
-  },
-  {
-    title: "VC / Private Equity",
-    description:
-      "Step into the world of founders, businesses, investment opportunities and deal decisions.",
-    icon: CircleDollarSign,
-  },
-  {
-    title: "Future of Finance",
-    description:
-      "Explore emerging opportunities across fintech, AI, digital finance and new-age finance models.",
-    icon: Sparkles,
-  },
-];
-
-const learningPath = [
-  {
-    title: "Explore",
-    description: "Discover careers and big picture opportunities.",
-  },
-  {
-    title: "Try",
-    description: "Work on real-world projects and case studies.",
-  },
-  {
-    title: "Reflect",
-    description: "Make sense of what excites you.",
-  },
-  {
-    title: "Connect",
-    description: "Learn from people in the field.",
-  },
-  {
-    title: "Decide",
-    description: "Take your next step with confidence.",
-  },
-];
-
-const navItems = [
-  { label: "Career labs", href: "#careers" },
-  { label: "Reflections", href: "#reflection" },
-];
-
-const navLinkClasses =
-  "relative py-2 text-[16px] font-semibold text-[#0e0e0e] transition group-hover:text-white after:absolute after:bottom-1 after:left-0 after:h-[3px] after:w-full after:origin-left after:scale-x-0 after:bg-[#f8dc03] after:transition-transform after:duration-200 hover:after:scale-x-100";
+  AUTH,
+  articles,
+  careers,
+  comparisons,
+  experts,
+  footerColumns,
+  learnerStories,
+  navItems,
+  trustItems,
+} from "./landing-content";
+import { FadeUp, HighlightStatement, Marquee, Reveal } from "./landing-motion";
+import {
+  ArticleDoodle,
+  HandbookMock,
+  IndiaDots,
+  LearnerThumb,
+  LiveSessionMock,
+  PortfolioMock,
+  PlusToggle,
+  ReportMock,
+  SimulationMock,
+  Skyline,
+  VideoModuleMock,
+} from "./landing-illustrations";
 
 /* ---------------------------------------------------------
-    Hero illustration — folder + cards, drawn to match the
-    Gold + Aqua / Studio design
+    Shared bits
 --------------------------------------------------------- */
-function HeroIllustration() {
+function CdpMark({ compact = false }: { compact?: boolean }) {
   return (
-    <div className="relative mx-auto h-[330px] w-full max-w-[560px] sm:h-[420px] lg:h-[470px]">
-      {/* Handwritten note — top right */}
-      <div className="absolute right-0 top-0 hidden w-[150px] rotate-[-5deg] text-right sm:block">
-        <p className="font-hand text-[17px] font-bold uppercase leading-[1.15] tracking-[0.02em] text-[#0e0e0e]">
-          Same curiosity.
-          <br />
-          A brighter tomorrow.
-        </p>
-        <span className="ml-auto mt-1.5 block h-[3px] w-9 rotate-[-4deg] rounded bg-[#f8dc03]" />
-      </div>
+    <span className="flex items-center gap-2.5">
+      <span
+        className={`font-extrabold leading-none tracking-[-0.06em] text-white ${
+          compact ? "text-[22px]" : "text-[26px]"
+        }`}
+      >
+        CDP
+      </span>
+      <span className="hidden border-l border-white/20 pl-2.5 text-[9px] font-semibold uppercase leading-[1.3] tracking-[0.08em] text-white/55 sm:block">
+        Career Discovery Program
+        <br />
+        by FinTree
+      </span>
+    </span>
+  );
+}
 
-      {/* Doodle strokes — upper left */}
-      <div className="absolute left-0 top-[16%] z-0 flex flex-col gap-1.5">
-        <span className="block h-[3px] w-6 -rotate-[28deg] rounded-full bg-[#0e0e0e]" />
-        <span className="block h-[3px] w-7 rounded-full bg-[#0e0e0e]" />
-        <span className="block h-[3px] w-6 rotate-[24deg] rounded-full bg-[#0e0e0e]" />
-      </div>
+function GoldButton({
+  href,
+  children,
+  className = "",
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`group inline-flex items-center gap-2.5 rounded-full bg-[#f8dc03] py-2 pl-5 pr-2 text-[14px] font-extrabold text-[#0e0e0e] transition-all duration-300 hover:bg-[#ffe95a] active:scale-[0.98] ${className}`}
+    >
+      {children}
+      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0e0e0e] text-[#f8dc03] transition-transform duration-300 group-hover:rotate-45">
+        <ArrowRight className="h-3.5 w-3.5" />
+      </span>
+    </Link>
+  );
+}
 
-      {/* White card — bar chart */}
-      <div className="absolute left-[56%] top-[11%] z-10 w-[37%] rotate-[5deg] rounded-[10px] border-2 border-[#0e0e0e] bg-white p-3 shadow-[4px_4px_0_rgba(14,14,14,0.10)] sm:p-4">
-        <p className="text-[9px] font-extrabold uppercase leading-snug tracking-[0.06em] sm:text-[11px]">
-          A brighter
-          <br />
-          you in finance
-        </p>
-        <div className="mt-3 flex h-8 items-end gap-1.5 sm:h-12">
-          <span className="h-[35%] w-[18%] rounded-[2px] border-2 border-[#0e0e0e] bg-[#f8dc03]" />
-          <span className="h-[60%] w-[18%] rounded-[2px] border-2 border-[#0e0e0e] bg-white" />
-          <span className="h-[95%] w-[18%] rounded-[2px] bg-[#0e0e0e]" />
+function TextLink({
+  href,
+  children,
+  tone = "light",
+  className = "",
+}: {
+  href: string;
+  children: React.ReactNode;
+  tone?: "light" | "dark";
+  className?: string;
+}) {
+  const tones =
+    tone === "light"
+      ? "text-white underline decoration-white/35 decoration-2 underline-offset-[7px] hover:decoration-[#f8dc03]"
+      : "text-[#0e0e0e] underline decoration-[#f8dc03] decoration-2 underline-offset-[7px] hover:decoration-[#0e0e0e]";
+  return (
+    <Link
+      href={href}
+      className={`inline-flex items-center gap-2 text-[14px] font-extrabold transition-colors ${tones} ${className}`}
+    >
+      {children}
+    </Link>
+  );
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="mx-auto max-w-[22ch] text-center text-[clamp(30px,4.4vw,50px)] font-extrabold leading-[1.05] tracking-[-0.035em] text-white">
+      {children}
+    </h2>
+  );
+}
+
+/** Forces the mockup's line break on sm+ while letting small screens wrap. */
+function Break() {
+  return (
+    <>
+      <br className="hidden sm:inline" />
+      {/* keeps the word gap when the break is hidden on small screens */}
+      {" "}
+    </>
+  );
+}
+
+const mediaByKind = {
+  video: VideoModuleMock,
+  live: LiveSessionMock,
+  simulation: SimulationMock,
+  report: ReportMock,
+};
+
+/* ---------------------------------------------------------
+    Header
+--------------------------------------------------------- */
+function Header() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0e0e0e]/85 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-5 sm:px-8 lg:px-10">
+        <div className="flex items-center gap-8 lg:gap-12">
+          <Link href="/" aria-label="CDP home">
+            <CdpMark />
+          </Link>
+          <nav className="hidden items-center gap-7 lg:flex">
+            {navItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="group relative py-2 text-[13px] font-semibold text-white/65 transition-colors hover:text-white"
+              >
+                {item.label}
+                <span className="absolute bottom-0.5 left-0 h-[2px] w-full origin-left scale-x-0 bg-[#f8dc03] transition-transform duration-300 group-hover:scale-x-100" />
+              </a>
+            ))}
+          </nav>
         </div>
-        <div className="mt-3 space-y-1.5">
-          <span className="block h-[3px] w-full rounded bg-black/15" />
-          <span className="block h-[3px] w-[80%] rounded bg-black/15" />
-          <span className="block h-[3px] w-[45%] rounded bg-[#f8dc03]" />
+
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Link
+            href={AUTH.login}
+            className="hidden text-[13px] font-bold text-white/75 transition-colors hover:text-white sm:inline-flex"
+          >
+            Log in
+          </Link>
+          <Link
+            href={AUTH.signup}
+            className="group inline-flex items-center gap-2 rounded-full bg-[#f8dc03] py-1.5 pl-4 pr-1.5 text-[13px] font-extrabold text-[#0e0e0e] transition hover:bg-[#ffe95a]"
+          >
+            Sign up
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0e0e0e] text-[#f8dc03] transition-transform duration-300 group-hover:rotate-45">
+              <ArrowRight className="h-3 w-3" />
+            </span>
+          </Link>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white transition hover:border-white/40 lg:hidden"
+          >
+            {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
         </div>
       </div>
 
-      {/* Aqua card — the list */}
-      <div className="absolute left-[26%] top-0 z-20 w-[41%] rotate-[-6deg] rounded-[10px] border-2 border-[#0e0e0e] bg-[#1ed2f4] p-3 shadow-[4px_4px_0_rgba(14,14,14,0.10)] sm:p-4">
-        <ul className="space-y-0.5 text-[10px] font-extrabold uppercase leading-snug tracking-[0.05em] text-[#0e0e0e] sm:text-[12px]">
-          <li>Explore</li>
-          <li>Learn</li>
-          <li>Reflect</li>
-          <li>Connect</li>
-          <li>Decide</li>
-        </ul>
-        <span className="mt-2 block h-[3px] w-7 rounded bg-[#0e0e0e]" />
-      </div>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="mobile-menu"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden border-t border-white/10 bg-[#0e0e0e] lg:hidden"
+          >
+            <nav className="flex flex-col gap-1 px-5 py-4 sm:px-8">
+              {navItems.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-2 py-2.5 text-[15px] font-semibold text-white/75 transition hover:bg-white/5 hover:text-white"
+                >
+                  {item.label}
+                </a>
+              ))}
+              <div className="mt-3 flex items-center gap-4 border-t border-white/10 pt-4">
+                <Link
+                  href={AUTH.login}
+                  onClick={() => setOpen(false)}
+                  className="text-[15px] font-bold text-white/80 underline decoration-white/30 decoration-2 underline-offset-4"
+                >
+                  Log in
+                </Link>
+                <GoldButton href={AUTH.signup} className="ml-auto">
+                  Sign up
+                </GoldButton>
+              </div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
 
-      {/* Yellow folder */}
-      <div className="absolute left-[4%] top-[32%] z-30 w-[58%] rotate-[-3deg]">
-        <svg viewBox="0 0 340 250" fill="none" className="block w-full">
-          <path
-            d="M 20,38 L 32,38 Q 40,38 40,30 L 40,24 Q 40,16 48,16 L 162,16 Q 170,16 170,24 L 170,30 Q 170,38 178,38 L 320,38 Q 332,38 332,50 L 332,228 Q 332,240 320,240 L 20,240 Q 8,240 8,228 L 8,50 Q 8,38 20,38 Z"
-            fill="#f8dc03"
-            stroke="#0e0e0e"
-            strokeWidth="3.5"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <div className="absolute left-[16%] top-[24%] rotate-[-4deg]">
-          <p className="font-hand text-[20px] font-bold leading-[1.05] text-[#0e0e0e] sm:text-[26px] lg:text-[30px]">
-            Ideas
-            <br />
-            today.
-            <br />
-            Options
-            <br />
-            tomorrow.
+/* ---------------------------------------------------------
+    Hero
+--------------------------------------------------------- */
+function Hero() {
+  return (
+    <section className="overflow-hidden">
+      <div className="mx-auto max-w-7xl px-5 pb-6 pt-12 sm:px-8 sm:pt-16 lg:px-10 lg:pt-20">
+        <FadeUp>
+          <h1 className="max-w-[20ch] text-[clamp(40px,7.4vw,84px)] font-extrabold leading-[0.98] tracking-[-0.045em] text-white">
+            Try a finance career
+            <Break />
+            before you choose it
+          </h1>
+        </FadeUp>
+
+        <FadeUp delay={0.12}>
+          <p className="mt-6 max-w-[560px] text-[15px] leading-7 text-white/55 sm:text-base">
+            CDP is a 30-day program. You work through five finance careers and
+            leave with a report that shows which one fits you.
           </p>
-          <span className="mt-2 block h-[3px] w-10 rotate-[-3deg] rounded bg-[#0e0e0e]" />
+        </FadeUp>
+
+        <FadeUp delay={0.22}>
+          <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
+            <GoldButton href={AUTH.signup}>Sign up</GoldButton>
+            <TextLink href={AUTH.login}>Log in</TextLink>
+          </div>
+        </FadeUp>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------
+    Hear from our learners
+--------------------------------------------------------- */
+function LearnerRail() {
+  return (
+    <section className="py-10 sm:py-14">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <Reveal>
+          <p className="text-[13px] font-semibold text-white/45">
+            Hear from our learners
+          </p>
+        </Reveal>
+      </div>
+      <Reveal delay={0.1} className="mt-5">
+        <Marquee duration={64}>
+          {learnerStories.map((story, index) => (
+            <article
+              key={index}
+              className="w-[268px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-[0_24px_50px_-32px_rgba(0,0,0,0.9)] transition-transform duration-300 hover:-translate-y-1 sm:w-[320px]"
+            >
+              <LearnerThumb tone={story.tone} start={story.start} end={story.end} />
+              <div className="p-4 sm:p-5">
+                <p className="text-[15px] font-extrabold leading-snug tracking-[-0.02em] text-[#0e0e0e] sm:text-[17px]">
+                  {story.quote}
+                </p>
+                <p className="mt-4 text-[13px] font-bold text-[#0e0e0e]">
+                  {story.name}
+                </p>
+                <p className="text-[11px] text-[#5a5f58]">{story.meta}</p>
+              </div>
+            </article>
+          ))}
+        </Marquee>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------
+    Founder statement — words light up on scroll
+--------------------------------------------------------- */
+function FounderStatement() {
+  return (
+    <section id="founder" className="scroll-mt-24 py-12 sm:py-16 lg:py-24">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <HighlightStatement
+          text="Most students choose a finance career by reading about it. Then they commit and hope it fits. We built CDP so you can do the work first, and choose once you know."
+          className="max-w-[1000px] text-[clamp(24px,3.6vw,44px)] font-extrabold leading-[1.18] tracking-[-0.035em] text-white"
+        />
+        <Reveal delay={0.1}>
+          <div className="mt-8 flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[13px] font-extrabold text-[#0e0e0e]">
+              UJ
+            </span>
+            <span>
+              <span className="block text-[15px] font-bold text-white">
+                Utkarsh Jain
+              </span>
+              <span className="block text-[13px] text-white/50">
+                Founder, FinTree Education
+              </span>
+            </span>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------
+    Skyline
+--------------------------------------------------------- */
+function SkylineSection() {
+  return (
+    <section className="pb-6 sm:pb-10">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <Skyline />
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------
+    How CDP does things differently
+--------------------------------------------------------- */
+function HowDifferent() {
+  return (
+    <section id="how" className="scroll-mt-24 py-14 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
+        <Reveal>
+          <SectionHeading>
+            How CDP does
+            <Break />
+            things differently
+          </SectionHeading>
+        </Reveal>
+
+        <div className="mt-12 space-y-12 sm:mt-16">
+          {comparisons.map((item, index) => {
+            const Media = mediaByKind[item.media];
+            const isLast = index === comparisons.length - 1;
+            return (
+              <Reveal key={item.index} delay={0.05} replay>
+                <div className="relative sm:pl-20">
+                  {!isLast && (
+                    <span className="absolute bottom-[-3rem] left-[21px] top-16 hidden w-px bg-white/10 sm:block" />
+                  )}
+                  <span className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-[#f8dc03] text-[13px] font-extrabold text-[#0e0e0e] sm:absolute sm:left-0 sm:top-0 sm:mb-0">
+                    {item.index}
+                  </span>
+
+                  <article className="rounded-3xl shadow-[0_40px_80px_-56px_rgba(0,0,0,1)]">
+                    <div className="grid gap-6 rounded-t-3xl bg-white p-5 sm:p-7 md:grid-cols-[1.02fr_0.98fr] md:items-center">
+                      <div>
+                        <span className="text-[19px] font-extrabold tracking-[-0.06em] text-[#0e0e0e]">
+                          CDP
+                        </span>
+                        <h3 className="mt-4 max-w-[16ch] text-[22px] font-extrabold leading-[1.08] tracking-[-0.035em] text-[#0e0e0e] sm:text-[27px]">
+                          {item.title}
+                        </h3>
+                        <p className="mt-3 max-w-[42ch] text-[14px] leading-6 text-[#5a5f58]">
+                          {item.description}
+                        </p>
+                      </div>
+                      <Media />
+                    </div>
+
+                    <div className="relative rounded-b-3xl bg-[#161616] px-5 pb-5 pt-6 sm:px-7">
+                      <span className="absolute -top-5 left-5 flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-[#0e0e0e] text-[11px] font-extrabold text-white">
+                        VS
+                      </span>
+                      <p className="text-[14px] font-bold text-white">
+                        The usual way
+                      </p>
+                      <p className="mt-1 text-[14px] leading-6 text-white/45">
+                        {item.usual}
+                      </p>
+                    </div>
+                  </article>
+                </div>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
+    </section>
+  );
+}
 
-      {/* Handwritten note — bottom right */}
-      <div className="absolute bottom-[4%] right-0 hidden w-[150px] rotate-[6deg] text-right sm:block">
-        <p className="font-hand text-[17px] font-bold uppercase leading-[1.15] text-[#0e0e0e]">
-          Careers are built
-          <br />
-          by exploration.
+/* ---------------------------------------------------------
+    How CDP can help you
+--------------------------------------------------------- */
+function HelpPanel({
+  chip,
+  chipTone,
+  title,
+  highlight,
+  highlightTone,
+  bullets,
+  action,
+  children,
+  first = false,
+}: {
+  chip: string;
+  chipTone: "gold" | "aqua";
+  title: React.ReactNode;
+  highlight: string;
+  highlightTone: "gold" | "aqua";
+  bullets: string[];
+  action: React.ReactNode;
+  children: React.ReactNode;
+  first?: boolean;
+}) {
+  const square = chipTone === "gold" ? "bg-[#f8dc03]" : "bg-[#1ed2f4]";
+  const marker =
+    highlightTone === "gold"
+      ? "bg-[#f8dc03] text-[#0e0e0e]"
+      : "bg-[#1ed2f4] text-[#0e0e0e]";
+
+  return (
+    <div
+      className={`grid items-center gap-8 lg:grid-cols-2 lg:gap-12 ${
+        first ? "" : "mt-10 border-t border-black/10 pt-10 sm:mt-12 sm:pt-12"
+      }`}
+    >
+      <div>
+        <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#5a5f58]">
+          <span className={`h-2.5 w-2.5 ${square}`} />
+          {chip}
+        </span>
+        <h3 className="mt-4 max-w-[16ch] text-[clamp(26px,3.4vw,38px)] font-extrabold leading-[1.05] tracking-[-0.035em] text-[#0e0e0e]">
+          {title}
+        </h3>
+        <p className="mt-5">
+          <span className={`box-decoration-clone px-1.5 py-0.5 text-[17px] font-extrabold tracking-[-0.02em] ${marker}`}>
+            {highlight}
+          </span>
         </p>
-        <span className="ml-auto mt-1.5 block h-[3px] w-9 rotate-[4deg] rounded bg-[#1ed2f4]" />
+        <ul className="mt-5 space-y-2.5">
+          {bullets.map((bullet) => (
+            <li
+              key={bullet}
+              className="flex items-start gap-2.5 text-[15px] leading-6 text-[#5a5f58]"
+            >
+              <span className="mt-2.5 h-px w-3 shrink-0 bg-[#5a5f58]" />
+              {bullet}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+          {action}
+        </div>
       </div>
+      <div className="mx-auto w-full max-w-[420px]">{children}</div>
     </div>
   );
 }
 
-export default function LandingPage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  /* Which tab owns the yellow underline: "home", "#careers" or "#reflection" */
-  const [activeNav, setActiveNav] = useState("home");
+function HowHelp() {
+  return (
+    <section id="help" className="scroll-mt-24 py-14 sm:py-20">
+      <div className="mx-auto max-w-6xl px-5 sm:px-8 lg:px-10">
+        <Reveal>
+          <SectionHeading>
+            How CDP
+            <Break />
+            can help you
+          </SectionHeading>
+        </Reveal>
 
-  /* Keep the underline in step with the URL (deep links, back/forward) */
-  useEffect(() => {
-    const syncActiveNav = () => setActiveNav(window.location.hash || "home");
-    syncActiveNav();
-    window.addEventListener("hashchange", syncActiveNav);
-    return () => window.removeEventListener("hashchange", syncActiveNav);
-  }, []);
+        <Reveal delay={0.1}>
+          <div className="mt-10 rounded-[32px] bg-white p-6 shadow-[0_50px_100px_-60px_rgba(0,0,0,1)] sm:p-10">
+            <HelpPanel
+              first
+              chip="Simulations and games"
+              chipTone="gold"
+              title={
+                <>
+                  Do the work
+                  <br />
+                  before you
+                  <br />
+                  choose it
+                </>
+              }
+              highlight="Simulations built on real finance tasks"
+              highlightTone="gold"
+              bullets={[
+                "Games that test how you take decisions",
+                "A short quiz after every module",
+              ]}
+              action={<GoldButton href={AUTH.signup}>Sign up</GoldButton>}
+            >
+              <PortfolioMock />
+            </HelpPanel>
+
+            <HelpPanel
+              chip="What you take home"
+              chipTone="aqua"
+              title={
+                <>
+                  Leave knowing
+                  <br />
+                  which career
+                  <br />
+                  fits you
+                </>
+              }
+              highlight="A personal career-fit report"
+              highlightTone="aqua"
+              bullets={[
+                "The Career Discovery Handbook",
+                "A certificate and digital badges",
+              ]}
+              action={
+                <>
+                  <GoldButton href={AUTH.signup}>Sign up</GoldButton>
+                  <TextLink href={AUTH.login} tone="dark">
+                    Log in
+                  </TextLink>
+                </>
+              }
+            >
+              <HandbookMock />
+            </HelpPanel>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------
+    Meet the experts
+--------------------------------------------------------- */
+function Experts() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  const tones: Record<string, string> = {
+    gold: "bg-[#f8dc03] text-[#0e0e0e]",
+    aqua: "bg-[#1ed2f4] text-[#0e0e0e]",
+    paper: "bg-white text-[#0e0e0e]",
+  };
 
   return (
-    <main className="min-h-screen bg-[#f9fff6] text-[#0e0e0e] selection:bg-[#f8dc03] selection:text-[#0e0e0e]">
-      {/* =========================================================
-          HEADER
-      ========================================================= */}
-      <header className="group sticky top-0 z-50 border-b border-black/10 bg-[#f9fff6] shadow-[0_2px_14px_rgba(0,0,0,0.06)] transition-colors duration-300 hover:border-white/10 hover:bg-[#0e0e0e] hover:shadow-[0_2px_14px_rgba(0,0,0,0.18)]">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
-          <div className="flex items-center gap-8 lg:gap-12">
-            {/* Logo: Rarewise — dark on the white bar, flipped white the
-                moment the header turns black on hover */}
-            <Link href="/" className="flex items-center" aria-label="Rarewise home">
-              <Image
-                src="/rarewise-logo.png"
-                alt="Rarewise"
-                width={1067}
-                height={215}
-                priority
-                className="h-5 w-auto transition group-hover:brightness-0 group-hover:invert"
-              />
-            </Link>
+    <section id="experts" className="scroll-mt-24 py-14 sm:py-20">
+      <div className="mx-auto max-w-5xl px-5 sm:px-8 lg:px-10">
+        <Reveal>
+          <SectionHeading>
+            Meet the experts
+            <Break />
+            you learn from
+          </SectionHeading>
+        </Reveal>
 
-            {/* Nav — the clicked tab keeps the yellow underline, the rest lose it */}
-            <nav className="hidden items-center gap-8 lg:flex">
-              <Link
-                href="/"
-                onClick={() => setActiveNav("home")}
-                className={`${navLinkClasses}${activeNav === "home" ? " after:scale-x-100" : ""}`}
-              >
-                Home
-              </Link>
-              {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setActiveNav(item.href)}
-                  className={`${navLinkClasses}${activeNav === item.href ? " after:scale-x-100" : ""}`}
+        <div className="mt-10 space-y-3 sm:mt-12">
+          {experts.map((expert, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <Reveal key={expert.name + index} delay={index * 0.06}>
+                <div
+                  className={`overflow-hidden rounded-2xl border bg-[#151515] transition-colors duration-300 ${
+                    isOpen ? "border-white/25" : "border-white/10 hover:border-white/25"
+                  }`}
                 >
-                  {item.label}
-                </Link>
+                  <button
+                    type="button"
+                    onClick={() => setOpenIndex(isOpen ? null : index)}
+                    aria-expanded={isOpen}
+                    className="group flex w-full items-center gap-4 px-4 py-4 text-left sm:px-5"
+                  >
+                    <span
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold ${
+                        tones[expert.tone]
+                      }`}
+                    >
+                      {expert.initials}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[15px] font-bold text-white sm:text-[16px]">
+                        {expert.name}
+                      </span>
+                      <span className="block truncate text-[13px] text-white/50">
+                        {expert.role}
+                      </span>
+                    </span>
+                    <PlusToggle open={isOpen} />
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        key="bio"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <p className="px-4 pb-4 pl-[60px] text-[14px] leading-6 text-white/55 sm:px-5 sm:pl-[68px]">
+                          {expert.bio}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
+
+        <Reveal delay={0.1}>
+          <div className="mt-6 flex items-center justify-between">
+            <span className="flex -space-x-2.5">
+              <span className="h-8 w-8 rounded-full border-2 border-[#0e0e0e] bg-[#f8dc03]" />
+              <span className="h-8 w-8 rounded-full border-2 border-[#0e0e0e] bg-[#1ed2f4]" />
+              <span className="h-8 w-8 rounded-full border-2 border-[#0e0e0e] bg-white" />
+            </span>
+            <a
+              href="#experts"
+              className="group inline-flex items-center gap-2 text-[13px] font-bold text-white/70 transition-colors hover:text-white"
+            >
+              See all experts
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </a>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------
+    Five careers you get to try
+--------------------------------------------------------- */
+function FiveCareers() {
+  const tones: Record<string, string> = {
+    gold: "bg-[#f8dc03]",
+    aqua: "bg-[#1ed2f4]",
+    paper: "bg-[#f4f4f1]",
+  };
+
+  return (
+    <section id="tracks" className="scroll-mt-24 py-14 sm:py-20">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <div className="grid items-end gap-8 lg:grid-cols-[1fr_1.1fr]">
+          <Reveal>
+            <h2 className="text-[clamp(30px,4.4vw,50px)] font-extrabold leading-[1.05] tracking-[-0.035em] text-white">
+              Five careers
+              <Break />
+              you get to try
+            </h2>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <ul className="flex flex-col gap-3 lg:items-end">
+              {[
+                "Watch how the job works",
+                "Meet someone who does it",
+                "Do the work in a simulation",
+              ].map((line) => (
+                <li
+                  key={line}
+                  className="flex items-center gap-3 text-[15px] font-semibold text-white/75 sm:text-[16px]"
+                >
+                  <span className="h-3 w-3 rounded-full border-2 border-white/45" />
+                  {line}
+                </li>
               ))}
-            </nav>
+            </ul>
+          </Reveal>
+        </div>
+
+        <div className="mt-9 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {careers.map((career, index) => {
+            const Icon = career.icon;
+            return (
+              <Reveal key={career.title} delay={index * 0.07} className="h-full">
+                <article className="group h-full overflow-hidden rounded-2xl bg-white transition-transform duration-300 hover:-translate-y-1.5">
+                  <div
+                    className={`relative flex h-32 items-end p-4 ${tones[career.tone]}`}
+                  >
+                    <Icon className="absolute right-4 top-4 h-7 w-7 text-[#0e0e0e]/70" />
+                    <h3 className="max-w-[9ch] text-[19px] font-extrabold leading-[1.05] tracking-[-0.03em] text-[#0e0e0e]">
+                      {career.title}
+                    </h3>
+                  </div>
+                  <div className="p-4">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#5a5f58]">
+                      What you will try
+                    </p>
+                    <ul className="mt-3 space-y-2">
+                      {career.tries.map((tryItem) => (
+                        <li
+                          key={tryItem}
+                          className="flex items-start gap-2 text-[13px] leading-5 text-[#3f443e]"
+                        >
+                          <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#0e0e0e]/50" />
+                          {tryItem}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </article>
+              </Reveal>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------
+    Start learning before you join
+--------------------------------------------------------- */
+function StartLearning() {
+  const tones: Record<string, string> = {
+    gold: "bg-[#f8dc03]",
+    aqua: "bg-[#1ed2f4]",
+    paper: "bg-white",
+  };
+
+  return (
+    <section className="py-14 sm:py-20">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <Reveal>
+          <SectionHeading>
+            Start learning
+            <Break />
+            before you join
+          </SectionHeading>
+        </Reveal>
+
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {articles.map((article, index) => (
+            <Reveal key={article.title} delay={index * 0.08} className="h-full">
+              <article
+                className={`group flex h-full min-h-[260px] flex-col justify-between rounded-3xl p-5 transition-transform duration-300 hover:-translate-y-1.5 sm:p-6 ${
+                  tones[article.tone]
+                } ${article.tone === "paper" ? "border border-black/10" : ""}`}
+              >
+                <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0e0e0e]/70">
+                  {article.meta}
+                </span>
+                <h3 className="mt-6 max-w-[18ch] text-[20px] font-extrabold leading-[1.15] tracking-[-0.03em] text-[#0e0e0e] sm:text-[22px]">
+                  {article.title}
+                </h3>
+                <div className="mt-8 flex items-end justify-between">
+                  <ArticleDoodle kind={article.doodle} />
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0e0e0e] text-[#f8dc03] transition-transform duration-300 group-hover:rotate-45">
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------
+    Come and talk to us first
+--------------------------------------------------------- */
+function ContactCta() {
+  return (
+    <section id="contact" className="scroll-mt-24 py-14 sm:py-20">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <Reveal>
+          <div className="grid items-center gap-10 rounded-[32px] border border-white/10 bg-[#141414] p-6 sm:p-10 lg:grid-cols-2">
+            <div>
+              <h2 className="max-w-[16ch] text-[clamp(30px,4.2vw,46px)] font-extrabold leading-[1.05] tracking-[-0.035em] text-white">
+                Come and
+                <br />
+                talk to us first
+              </h2>
+              <p className="mt-5 max-w-[42ch] text-[15px] leading-7 text-white/55">
+                Meet the team in Pune, or ask your questions on a call.
+              </p>
+              <GoldButton href={AUTH.signup} className="mt-7">
+                Get in touch
+              </GoldButton>
+            </div>
+            <IndiaDots />
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------
+    Footer
+--------------------------------------------------------- */
+function Footer() {
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
+  const toneSquares: Record<string, string> = {
+    gold: "bg-[#f8dc03]",
+    aqua: "bg-[#1ed2f4]",
+    paper: "bg-white",
+  };
+
+  return (
+    <footer className="border-t border-white/10 bg-[#0e0e0e] pb-8 pt-14 sm:pt-16">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
+          <div>
+            <span className="text-[30px] font-extrabold leading-none tracking-[-0.06em] text-white">
+              CDP
+            </span>
+            <h3 className="mt-5 max-w-[13ch] text-[26px] font-extrabold leading-[1.1] tracking-[-0.035em] text-white sm:text-[30px]">
+              You are choosing a career. Try it first.
+            </h3>
+            <p className="mt-4 text-[14px] leading-6 text-white/50">
+              One short note a week on careers in finance.
+            </p>
+            <form
+              className="mt-4 flex max-w-[380px] items-center gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (email.trim()) setSubscribed(true);
+              }}
+            >
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="Email address"
+                aria-label="Email address"
+                className="min-w-0 flex-1 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-[14px] text-white placeholder:text-white/35 focus:border-[#f8dc03] focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="shrink-0 rounded-full bg-[#f8dc03] px-5 py-2.5 text-[14px] font-extrabold text-[#0e0e0e] transition hover:bg-[#ffe95a]"
+              >
+                Subscribe
+              </button>
+            </form>
+            <p
+              className={`mt-2 text-[12px] text-[#f8dc03] transition-opacity duration-300 ${
+                subscribed ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              Thanks — you&apos;re on the list.
+            </p>
           </div>
 
-          {/* Right side: auth actions — no user profile */}
-          <div className="flex items-center gap-1 sm:gap-2">
+          {footerColumns.map((column) => (
+            <nav key={column.title} className="lg:pt-2">
+              <p className="text-[13px] font-bold uppercase tracking-[0.14em] text-white/45">
+                {column.title}
+              </p>
+              <ul className="mt-4 space-y-2.5">
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-[14px] text-white/70 transition-colors hover:text-[#f8dc03]"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+        </div>
+
+        <div className="mt-12 grid gap-4 rounded-3xl border border-white/10 bg-[#151515] p-5 sm:grid-cols-3 sm:p-6">
+          {trustItems.map((item) => (
+            <div key={item.title} className="flex gap-3.5">
+              <span
+                className={`mt-1 h-7 w-7 shrink-0 rounded-md ${toneSquares[item.tone]}`}
+              />
+              <span>
+                <span className="block text-[14px] font-bold text-white">
+                  {item.title}
+                </span>
+                <span className="mt-1 block text-[12px] leading-5 text-white/45">
+                  {item.body}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[12px] text-white/40">
+            © 2026 FinTree Education, Pune. All rights reserved.
+          </p>
+          <div className="flex items-center gap-4">
             <Link
-              href="/login"
-              className="rounded-lg border-2 border-[#f8dc03] px-4 py-2 text-[16px] font-semibold text-[#0e0e0e] transition hover:bg-black/5 group-hover:text-white group-hover:hover:bg-white/10"
+              href={AUTH.login}
+              className="text-[12px] font-bold text-white/60 transition-colors hover:text-white"
             >
               Log in
             </Link>
             <Link
-              href="/signup"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#f8dc03] px-5 py-2.5 text-[16px] font-bold text-[#0e0e0e] shadow-sm transition hover:bg-[#ffe95a] active:scale-[0.98]"
+              href={AUTH.signup}
+              className="text-[12px] font-bold text-[#f8dc03] transition-colors hover:text-white"
             >
               Sign up
-              <ArrowRight className="h-4 w-4" />
             </Link>
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen((v) => !v)}
-              aria-label="Open menu"
-              className="flex h-9 w-9 items-center justify-center rounded-full text-[#0e0e0e] transition hover:bg-black/5 group-hover:text-white group-hover:hover:bg-white/10 lg:hidden"
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
           </div>
         </div>
+      </div>
+    </footer>
+  );
+}
 
-        {/* Mobile Navigation Menu */}
-        {mobileMenuOpen && (
-          <div className="border-t border-black/10 bg-[#f9fff6] px-5 py-4 transition-colors group-hover:border-white/10 group-hover:bg-[#0e0e0e] lg:hidden space-y-3">
-            <Link
-              href="/"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setActiveNav("home");
-              }}
-              className="block text-[16px] font-semibold text-[#0e0e0e] transition-colors group-hover:text-white"
-            >
-              Home
-            </Link>
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setActiveNav(item.href);
-                }}
-                className="block text-[16px] font-semibold text-[#0e0e0e] transition-colors group-hover:text-white"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        )}
-      </header>
-
-      {/* =========================================================
-          HERO
-      ========================================================= */}
-      <section className="overflow-hidden">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-10 pt-8 sm:px-8 sm:pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-14 lg:pt-14">
-          <div>
-            {/* Career advice — FamApp-style vertical word rotator.
-                Two hard lines: the statement, then "from" + the rotating
-                word. Each line has its own nowrap so neither can break. */}
-            <div className="hero-tagline font-extrabold leading-[1.08] tracking-[-0.03em] text-[#0e0e0e]">
-              <span className="sr-only">
-                Stop Taking Career advice from Relatives, Neighbours, ChatGPT, Friends, Influencers or Astrologers
-              </span>
-              <span aria-hidden="true" className="block">
-                <span className="block whitespace-nowrap">
-                  Stop Taking Career advice
-                </span>
-                <span className="flex items-center gap-x-[0.28em] whitespace-nowrap">
-                  <span>from</span>
-                  <span className="word-rotator">
-                    <span className="word-rotator__list">
-                      <span className="word-rotator__item">Relatives</span>
-                      <span className="word-rotator__item">Neighbours</span>
-                      <span className="word-rotator__item">ChatGPT</span>
-                      <span className="word-rotator__item">Friends</span>
-                      <span className="word-rotator__item">Influencers</span>
-                      <span className="word-rotator__item">Astrologers</span>
-                    </span>
-                  </span>
-                </span>
-              </span>
-            </div>
-
-            <h1 className="mt-6 text-[22px] font-extrabold leading-[1.02] tracking-[-0.045em] text-[#0e0e0e] sm:text-[28px] lg:text-[30px]">
-              <span className="block">Find your direction.</span>
-              <span className="block">Try the work.</span>
-            </h1>
-
-            <p className="mt-6 max-w-[520px] text-base leading-7 text-[#3f443e] sm:text-[17px]">
-              Explore real finance careers. Learn by doing. Build clarity at
-              your own pace.
-            </p>
-            <a
-              href="#careers"
-              className="mt-8 inline-flex items-center gap-3 rounded-[14px] bg-[#0e0e0e] px-6 py-3.5 text-[15px] font-semibold text-white shadow-sm transition hover:bg-black active:scale-[0.98]"
-            >
-              Explore careers
-              <ArrowRight className="h-4 w-4" />
-            </a>
-          </div>
-
-          <HeroIllustration />
-        </div>
-      </section>
-
-      {/* =========================================================
-          ACTION CARDS (Continue-learning card intentionally omitted)
-      ========================================================= */}
-      <section className="mx-auto max-w-7xl px-5 pb-4 sm:px-8 lg:px-10">
-        <div className="grid gap-5 md:grid-cols-2">
-          {/* Your next career lab — gold */}
-          <Link
-            href="/careers"
-            className="group relative flex min-h-[172px] flex-col rounded-[18px] bg-[#f8dc03] p-6 transition hover:shadow-[6px_6px_0_rgba(14,14,14,0.12)] sm:p-7"
-          >
-            <div className="flex gap-5">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/70">
-                <FlaskConical className="h-6 w-6 text-[#0e0e0e]" />
-              </span>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0e0e0e]">
-                  Your next career lab
-                </p>
-                <h2 className="mt-2 text-[22px] font-extrabold leading-tight tracking-[-0.02em] text-[#0e0e0e]">
-                  Build an investment view
-                </h2>
-                <p className="mt-2 max-w-[340px] text-sm leading-6 text-[#0e0e0e]/80">
-                  Apply what you&apos;ve learned in a hands-on simulation.
-                </p>
-              </div>
-            </div>
-            <ArrowRight className="absolute bottom-6 right-6 h-5 w-5 text-[#0e0e0e] transition group-hover:translate-x-1 sm:bottom-7 sm:right-7" />
-          </Link>
-
-          {/* Reflection journal — aqua */}
-          <Link
-            id="reflection"
-            href="/dashboard"
-            className="group relative flex min-h-[172px] flex-col rounded-[18px] bg-[#1ed2f4] p-6 transition hover:shadow-[6px_6px_0_rgba(14,14,14,0.12)] sm:p-7"
-          >
-            <div className="flex gap-5">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/70">
-                <NotebookPen className="h-6 w-6 text-[#0e0e0e]" />
-              </span>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0e0e0e]">
-                  Reflection journal
-                </p>
-                <h2 className="mt-2 text-[22px] font-extrabold leading-tight tracking-[-0.02em] text-[#0e0e0e]">
-                  What felt interesting today?
-                </h2>
-                <p className="mt-2 max-w-[340px] text-sm leading-6 text-[#0e0e0e]/80">
-                  Capture your thoughts, questions and evolving interests.
-                </p>
-              </div>
-            </div>
-            <ArrowRight className="absolute bottom-6 right-6 h-5 w-5 text-[#0e0e0e] transition group-hover:translate-x-1 sm:bottom-7 sm:right-7" />
-          </Link>
-        </div>
-      </section>
-
-      {/* =========================================================
-          CAREER TRACKS — target of the "Explore careers" button
-      ========================================================= */}
-      <section
-        id="careers"
-        className="mx-auto max-w-7xl scroll-mt-24 px-5 py-14 sm:px-8 lg:px-10 lg:py-16"
-      >
-        <div className="max-w-2xl">
-          <p className="text-[13px] font-bold uppercase tracking-[0.28em] text-[#0e0e0e]">
-            Career tracks
-          </p>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-[-0.035em] text-[#0e0e0e] sm:text-4xl">
-            See what the work looks like before you choose the path.
-          </h2>
-          <p className="mt-4 text-base leading-7 text-[#4b504a]">
-            Explore the different sides of finance and understand the kind of
-            challenges each role handles.
-          </p>
-        </div>
-
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {careerTracks.map((track, index) => {
-            const Icon = track.icon;
-            const accent = index % 2 === 0 ? "bg-[#f8dc03]" : "bg-[#1ed2f4]";
-            return (
-              <article
-                key={track.title}
-                className="group flex flex-col rounded-[18px] border border-black/10 bg-white p-6 transition hover:border-[#0e0e0e]/25 hover:shadow-[5px_5px_0_rgba(14,14,14,0.08)]"
-              >
-                <span
-                  className={`flex h-11 w-11 items-center justify-center rounded-full ${accent}`}
-                >
-                  <Icon className="h-5 w-5 text-[#0e0e0e]" />
-                </span>
-                <h3 className="mt-5 text-lg font-extrabold tracking-[-0.02em] text-[#0e0e0e]">
-                  {track.title}
-                </h3>
-                <p className="mt-2 flex-1 text-sm leading-6 text-[#5a5f58]">
-                  {track.description}
-                </p>
-                <Link
-                  href="/signup"
-                  className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#0e0e0e]"
-                >
-                  Explore path
-                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                </Link>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* =========================================================
-          YOUR LEARNING PATH
-      ========================================================= */}
-      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
-        <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-6">
-          <div className="shrink-0 lg:w-[190px]">
-            <h2 className="text-[19px] font-bold tracking-[-0.02em] text-[#0e0e0e]">
-              Your learning path
-            </h2>
-            <p className="mt-1 text-sm text-[#5a5f58]">
-              From curiosity to clarity.
-            </p>
-          </div>
-
-          <ol className="grid flex-1 gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-0">
-            {learningPath.map((step, index) => (
-              <li key={step.title} className="relative">
-                <div className="flex items-center">
-                  <span
-                    className={`z-10 flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full text-sm font-bold text-[#0e0e0e] ${index % 2 === 0 ? "bg-[#f8dc03]" : "bg-[#1ed2f4]"
-                      }`}
-                  >
-                    {index + 1}
-                  </span>
-                  {index !== learningPath.length - 1 && (
-                    <span className="ml-2 hidden flex-1 border-t-2 border-dotted border-[#0e0e0e]/35 lg:block" />
-                  )}
-                </div>
-                <h3 className="mt-4 pr-5 text-[15px] font-bold text-[#0e0e0e]">
-                  {step.title}
-                </h3>
-                <p className="mt-1 max-w-[180px] pr-5 text-[13px] leading-5 text-[#5a5f58]">
-                  {step.description}
-                </p>
-              </li>
-            ))}
-          </ol>
-
-          {/* Handwritten aside */}
-          <div className="hidden w-[150px] shrink-0 rotate-[-6deg] lg:block">
-            <ArrowUpRight
-              className="mb-2 h-9 w-9 text-[#0e0e0e]"
-              strokeWidth={2.5}
-            />
-            <p className="font-hand text-[18px] font-bold uppercase leading-[1.15] text-[#0e0e0e]">
-              Different perspectives.
-              <br />
-              A clearer you.
-            </p>
-            <span className="mt-1.5 block h-[3px] w-12 rotate-[-3deg] rounded bg-[#f8dc03]" />
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================
-          FOOTER
-      ========================================================= */}
-      <footer className="border-t-2 border-[#f8dc03] bg-[#0e0e0e] text-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <Image
-              src="/rarewise-logo.png"
-              alt="Rarewise"
-              width={1067}
-              height={215}
-              className="h-9 w-auto brightness-0 invert"
-            />
-            <span className="hidden h-6 w-px bg-white/20 sm:block" />
-            <span className="text-base text-white/70 sm:text-[17px]">
-              Explore. Try. Reflect. Connect. Decide.
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-base text-white/70 sm:text-[17px]">
-              A more intentional you.
-            </span>
-            <span className="block h-[3px] w-9 bg-[#f8dc03]" />
-          </div>
-        </div>
-      </footer>
+/* ---------------------------------------------------------
+    Page
+--------------------------------------------------------- */
+export default function LandingPage() {
+  return (
+    <main className="min-h-screen bg-[#0e0e0e] text-white selection:bg-[#f8dc03] selection:text-[#0e0e0e]">
+      <Header />
+      <Hero />
+      <LearnerRail />
+      <FounderStatement />
+      <SkylineSection />
+      <HowDifferent />
+      <HowHelp />
+      <Experts />
+      <FiveCareers />
+      <StartLearning />
+      <ContactCta />
+      <Footer />
     </main>
   );
 }
